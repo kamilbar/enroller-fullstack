@@ -31,7 +31,11 @@
         },
         methods: {
             addNewMeeting(meeting) {
-                this.meetings.push(meeting);
+                    this.$http.post('meetings', meeting)
+                        .then(() => {
+                        this.meetings.push(meeting);
+                    })
+                   // .catch(response => this.failure('Błąd przy zakładaniu konta. Kod odpowiedzi: ' + response.status));
             },
             addMeetingParticipant(meeting) {
                 meeting.participants.push(this.username);
