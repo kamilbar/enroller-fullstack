@@ -1,7 +1,6 @@
 <template>
   <div>
     <new-meeting-form @added="addNewMeeting($event)"></new-meeting-form>
-
     <span v-if="meetings.length == 0">
                Brak zaplanowanych spotkań.
            </span>
@@ -14,6 +13,7 @@
                    @attend="addMeetingParticipant($event)"
                    @unattend="removeMeetingParticipant($event)"
                    @delete="deleteMeeting($event)"></meetings-list>
+                   
   </div>
 </template>
 
@@ -26,13 +26,15 @@
         props: ['username'],
         data() {
             return {
-                meetings: []
+                meetings: [],
+                loadedMeetings: [],
+                componentKey: 0,
             };
         },
         methods: {
             addNewMeeting(meeting) {
                     this.$http.post('meetings', meeting)
-                        .then(() => {
+                        .then(response => {
                         this.meetings.push(meeting);
                     })
                    // .catch(response => this.failure('Błąd przy zakładaniu konta. Kod odpowiedzi: ' + response.status));
@@ -45,7 +47,25 @@
             },
             deleteMeeting(meeting) {
                 this.meetings.splice(this.meetings.indexOf(meeting), 1);
+            },
+            getMeetings(){
+                this.$http.get('meetings')
+                    .then(response => {
+                       for (let i=0; i<response.body.length; i++){
+                        //    console.log("wartosc i: " + i);
+                        //    console.log("wartosc i: " + response.body[i]);
+                        //    console.log(response.body[i]);
+                        this.loadedMeetings.push(response.body[i]);
+                        // console.log("wartosc loadedMeetings: " + this.loadedMeetings.[i]);
+                       }
+                         this.meetings = this.loadedMeetings;
+                        // this.componentKey +=1;
+                    })
+                    .catch(response => console.log(response.status))
             }
+        },
+        beforeMount(){
+                this.getMeetings()
         }
     }
 </script>
