@@ -13,6 +13,19 @@
                    @attend="addMeetingParticipant($event)"
                    @unattend="removeMeetingParticipant($event)"
                    @delete="deleteMeeting($event)"></meetings-list>
+
+    <span v-if="loadedMeetings.length == 0">
+                   Brak spotkań.
+               </span>
+        <h3 v-else>
+          Zajęcia ({{ loadedMeetings.length }})
+        </h3>
+
+        <meetings-list :meetings="loadedMeetings"
+                       :username="username"
+                       @attend="addMeetingParticipant($event)"
+                       @unattend="removeMeetingParticipant($event)"
+                       @delete="deleteMeeting($event)"></meetings-list>
                    
   </div>
 </template>
@@ -27,15 +40,14 @@
         data() {
             return {
                 meetings: [],
-                loadedMeetings: [],
-                componentKey: 0,
+                loadedMeetings: []
             };
         },
         methods: {
             addNewMeeting(meeting) {
                     this.$http.post('meetings', meeting)
                         .then(response => {
-                        this.meetings.push(meeting);
+                        this.loadedMeetings.push(meeting);
                     })
                    // .catch(response => this.failure('Błąd przy zakładaniu konta. Kod odpowiedzi: ' + response.status));
             },
@@ -58,14 +70,15 @@
                         this.loadedMeetings.push(response.body[i]);
                         // console.log("wartosc loadedMeetings: " + this.loadedMeetings.[i]);
                        }
-                         this.meetings = this.loadedMeetings;
+                       console.log(response.body[i]);
+                        // this.loadedMeetings.push(response.body[i])
                         // this.componentKey +=1;
                     })
                     .catch(response => console.log(response.status))
             }
         },
-        beforeMount(){
-                this.getMeetings()
-        }
+ //       beforeMount(){
+ //               this.getMeetings()
+  //      }
     }
 </script>

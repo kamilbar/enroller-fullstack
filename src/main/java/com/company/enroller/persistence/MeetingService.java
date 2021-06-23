@@ -16,7 +16,7 @@ public class MeetingService {
     Session session;
 
     public MeetingService() {
-    	session = DatabaseConnector.getInstance().getSession();
+        session = DatabaseConnector.getInstance().getSession();
     }
 
     public Collection<Meeting> getAll() {
@@ -24,15 +24,15 @@ public class MeetingService {
         Query query = session.createQuery(hql);
         return query.list();
     }
-    
-    public Meeting findById(long id) {
-		return (Meeting) session.get(Meeting.class, id);
-	}
 
-	public void add(Meeting meeting) {
-		Transaction transaction = this.session.beginTransaction();
-		session.save(meeting);
-		transaction.commit();
-	}
+    public Meeting findById(long id) {
+        return (Meeting) session.get(Meeting.class, id);
+    }
+
+    public void add(Meeting meeting) {
+        Transaction transaction = this.session.beginTransaction();
+        session.save(meeting);
+        transaction.commit();
+    }
 
 }
