@@ -24,8 +24,8 @@ public class MeetingRestController {
 
     @Autowired
     ParticipantService participantService;
-    
- // Pobieranie listy spotkań
+
+    // Pobieranie listy spotkań
     // GET http://localhost:8080/api/meetings
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getMeetings() {
@@ -33,28 +33,27 @@ public class MeetingRestController {
         Collection<Meeting> meetings = meetingService.getAll();
         return new ResponseEntity<Collection<Meeting>>(meetings, HttpStatus.OK);
     }
-    
- // Dodawanie spotkań
- 	// POST http://localhost:8080/api/meetings + JSON
- 	@RequestMapping(value = "", method = RequestMethod.POST) 
- 	public ResponseEntity<?> addMeeting(@RequestBody Meeting meeting){
- 		if (meetingService.findById(meeting.getId()) != null){
- 			return new ResponseEntity<String>("Unable to create. Meeting with id '" + meeting.getId() + "' already exists", HttpStatus.CONFLICT);
- 		}
- 		meetingService.add(meeting);
- 		return new ResponseEntity<Meeting>(meeting, HttpStatus.CREATED);
- 	}
 
- 	// Pobieranie pojedynczego spotkania
- 	// GET http://localhost:8080/api/meetings/2
- 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
- 	public ResponseEntity<?> getMeeting(@PathVariable("id") long id) {
- 	    Meeting meeting = meetingService.findById(id);
- 		if (meeting == null) { 
- 			return new ResponseEntity(HttpStatus.NOT_FOUND);
- 		} 
- 		return new ResponseEntity<Meeting>(meeting, HttpStatus.OK); 
- 	}
+    // Dodawanie spotkań
+    // POST http://localhost:8080/api/meetings + JSON
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<?> addMeeting(@RequestBody Meeting meeting){
+        if (meetingService.findById(meeting.getId()) != null){
+            return new ResponseEntity<String>("Unable to create. Meeting with id '" + meeting.getId() + "' already exists", HttpStatus.CONFLICT);
+        }
+        meetingService.add(meeting);
+        return new ResponseEntity<Meeting>(meeting, HttpStatus.CREATED);
+    }
 
- 	
+    // Pobieranie pojedynczego spotkania
+    // GET http://localhost:8080/api/meetings/2
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getMeeting(@PathVariable("id") long id) {
+        Meeting meeting = meetingService.findById(id);
+        if (meeting == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
+    }
+
 }
