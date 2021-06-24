@@ -14,7 +14,7 @@
                    @unattend="removeMeetingParticipant($event)"
                    @delete="deleteMeeting($event)"></meetings-list>
 
-    <span v-if="loadedMeetings.length == 0">
+<!--    <span v-if="loadedMeetings.length == 0">
                    Brak spotkań.
                </span>
         <h3 v-else>
@@ -26,7 +26,7 @@
                        @attend="addMeetingParticipant($event)"
                        @unattend="removeMeetingParticipant($event)"
                        @delete="deleteMeeting($event)"></meetings-list>
-                   
+-->
   </div>
 </template>
 
@@ -40,14 +40,14 @@
         data() {
             return {
                 meetings: [],
-                loadedMeetings: []
+//                loadedMeetings: []
             };
         },
         methods: {
             addNewMeeting(meeting) {
                     this.$http.post('meetings', meeting)
                         .then(response => {
-                        this.loadedMeetings.push(meeting);
+                        this.meetings.push(meeting);
                     })
                    // .catch(response => this.failure('Błąd przy zakładaniu konta. Kod odpowiedzi: ' + response.status));
             },
@@ -58,27 +58,26 @@
                 meeting.participants.splice(meeting.participants.indexOf(this.username), 1);
             },
             deleteMeeting(meeting) {
-                this.meetings.splice(this.meetings.indexOf(meeting), 1);
+                this.$http.delete(`meetings/${meeting.id}`)
+                    .then(response => {
+                        this.meetings.splice(this.meetings.indexOf(meeting), 1);
+                })
+                .catch(response => console.log(response.status));
             },
             getMeetings(){
                 this.$http.get('meetings')
                     .then(response => {
                        for (let i=0; i<response.body.length; i++){
-                        //    console.log("wartosc i: " + i);
-                        //    console.log("wartosc i: " + response.body[i]);
-                        //    console.log(response.body[i]);
-                        this.loadedMeetings.push(response.body[i]);
-                        // console.log("wartosc loadedMeetings: " + this.loadedMeetings.[i]);
-                       }
-                       console.log(response.body[i]);
-                        // this.loadedMeetings.push(response.body[i])
-                        // this.componentKey +=1;
+                        response.body[i].participants=[];
+                        this.meetings.push(response.body[i]);
+                        }
+//                       console.log(response.body[i]);
                     })
-                    .catch(response => console.log(response.status))
+                   .catch(response => console.log(response.status))
             }
         },
- //       beforeMount(){
- //               this.getMeetings()
-  //      }
+        beforeMount(){
+                this.getMeetings()
+        }
     }
 </script>
