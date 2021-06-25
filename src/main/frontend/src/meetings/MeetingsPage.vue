@@ -52,10 +52,23 @@
                    // .catch(response => this.failure('Błąd przy zakładaniu konta. Kod odpowiedzi: ' + response.status));
             },
             addMeetingParticipant(meeting) {
-                meeting.participants.push(this.username);
+                this.$http.post(`meetings/${meeting.id}`, this.username)
+ //                                          console.log(meeting.id)
+ //                                            console.log(this.username)
+                    .then(response => {
+                    meeting.participants.push(this.username);
+                    this.meetings.push(meeting)
+   //                     meeting.participants.push(this.username);
+                })
+                .catch(response => console.log(response.status));
             },
             removeMeetingParticipant(meeting) {
-                meeting.participants.splice(meeting.participants.indexOf(this.username), 1);
+                this.$http.post(`meetings/${meeting.id}/removeParticipant_{participant.id}`)
+                    .then(response => {
+                    meeting.participants.splice(meeting.participants.indexOf(participant.id), 1);
+   //                     meeting.participants.push(this.username);
+                })
+                .catch(response => console.log(response.status));
             },
             deleteMeeting(meeting) {
                 this.$http.delete(`meetings/${meeting.id}`)

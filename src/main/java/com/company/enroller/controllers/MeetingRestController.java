@@ -2,6 +2,7 @@ package com.company.enroller.controllers;
 
 import java.util.Collection;
 
+import com.company.enroller.model.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,62 @@ public class MeetingRestController {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
+    }
+
+    // 2.1 dodawanie uczestnika do spotkania
+    //POST http://localhost:8080/meetings/2
+    @RequestMapping(value = "/{meeting_id}", method = RequestMethod.POST)
+    public ResponseEntity<?> addParticipantToTheMeeting(@PathVariable("meeting_id") long id, @RequestBody String login){
+        if (meetingService.findById(id) == null || participantService.findByLogin(login) == null) {
+            return new ResponseEntity<String>("Unable to add participant. Meeting or participant does not exist", HttpStatus.CONFLICT);
+        }
+        Meeting meeting = meetingService.findById(id);
+        Participant participant = participantService.findByLogin(login);
+        meeting.addParticipant(participant);
+//        meetingService.update(meeting);
+        return new ResponseEntity<Collection>(meeting.getParticipants(), HttpStatus.CREATED);
+    }
+
+    // 2.2 Pobieranie uczestników spotkania
+    //GET http://localhost:8080/meetings/4/participants
+    @RequestMapping(value = "/{meeting_id}/participants", method = RequestMethod.GET)
+    public ResponseEntity<?> getMeetingParticipants(@PathVariable("meeting_id") long id) {
+        Meeting meeting = meetingService.findById(id);
+        if (meeting == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Collection>(meeting.getParticipants(), HttpStatus.OK);
+    }
+
+    // 3.1 Usuwanie spotkania
+    // DELETE http://localhost:8080/meetings/5
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteMeeting(@PathVariable("id") long id) {
+        Meeting meeting = meetingService.findById(id);
+        if (meeting == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        meetingService.delete(meeting);
+        return new ResponseEntity<Meeting>(HttpStatus.NO_CONTENT);
+    }
+
+    // 3.2 Aktualizacja spotkania
+    // PUT http://localhost:8080/meetings/ + JSON
+    @RequestMapping(value = "", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateMeeting(@RequestBody Meeting meeting) {
+        meetingService.update(meeting);
+        return new ResponseEntity<Meeting>(HttpStatus.NO_CONTENT);
+    }
+
+    // 3.3 Usuwanie uczestnika ze spotkania
+    // POST http://localhost:8080/meetings/2/removeParticipant_user9
+    @RequestMapping(value = "/{meeting_id}/removeParticipant_{id}", method = RequestMethod.POST)
+    public ResponseEntity<?> removeParticipantFromMeeting(@PathVariable("meeting_id") long id,@PathVariable("id") String login) {
+        Meeting meeting = meetingService.findById(id);
+        Participant participant = participantService.findByLogin(login);
+        meeting.removeParticipant(participant);
+        meetingService.update(meeting);
+        return new ResponseEntity<Meeting>(HttpStatus.NO_CONTENT);
     }
 
 }
